@@ -38,3 +38,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof loadNewsFeed === 'function') loadNewsFeed();
         });
 });
+
+function loadNewsFeed() {
+    fetch('/api/news/latest')
+        .then(r => r.json())
+        .then(items => {
+            const container = document.getElementById('news-feed');
+            if (!container) return;
+            container.innerHTML = items.map(item => `
+                <div class="news-item p-2 border-b border-[#21262d] text-xs">
+                    <span class="text-[${item.category === 'deprem' ? '#ff8800' : item.category === 'guvenlik' ? '#ff3333' : item.category === 'hava' ? '#00f0ff' : '#8b949e'}] uppercase text-[10px]">${item.category || 'genel'}</span>
+                    <a href="${item.url || '#'}" target="_blank" class="block text-white hover:text-[#00f0ff] mt-1">${item.title}</a>
+                </div>
+            `).join('');
+        })
+        .catch(() => {});
+}

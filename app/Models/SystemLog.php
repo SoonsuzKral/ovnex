@@ -22,5 +22,15 @@ class SystemLog extends Model
         'records_inserted',
         'duration_ms',
         'error_message',
+        'created_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (SystemLog $log) {
+            if (!$log->created_at) {
+                $log->created_at = now();
+            }
+        });
+    }
 }

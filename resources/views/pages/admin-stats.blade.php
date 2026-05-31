@@ -60,7 +60,7 @@
                         </td>
                         <td class="py-2 pr-4">{{ $log->records_inserted ?? $log->records_fetched ?? 0 }}</td>
                         <td class="py-2 pr-4">{{ $log->duration_ms ? $log->duration_ms . ' ms' : '--' }}</td>
-                        <td class="py-2 text-gray-500">{{ $log->created_at ? $log->created_at->format('H:i:s d.m.Y') : '--' }}</td>
+                        <td class="py-2 text-gray-500">{{ $log->created_at ? \Carbon\Carbon::parse($log->created_at)->format('H:i:s d.m.Y') : '--' }}</td>
                     </tr>
                     @empty
                     <tr><td colspan="6" class="py-4 text-center text-gray-500">Henüz sistem logu bulunmuyor.</td></tr>

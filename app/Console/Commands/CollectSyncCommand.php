@@ -2,9 +2,9 @@
 namespace App\Console\Commands;
 
 use App\Services\OpenSkyService;
-use App\Services\EarthquakeService;
+use App\Services\AfadEarthquakeService;
 use App\Services\OpenWeatherService;
-use App\Services\NewsService;
+use App\Services\RssNewsService;
 use App\Services\TomTomTrafficService;
 use App\Services\MarineTrafficService;
 use Illuminate\Console\Command;
@@ -16,9 +16,9 @@ class CollectSyncCommand extends Command
 
     public function handle(
         OpenSkyService $openSky,
-        EarthquakeService $earthquake,
+        AfadEarthquakeService $earthquake,
         OpenWeatherService $weather,
-        NewsService $news,
+        RssNewsService $news,
         TomTomTrafficService $traffic,
         MarineTrafficService $marine,
     ): void {
@@ -35,7 +35,7 @@ class CollectSyncCommand extends Command
         $counts['weather'] = count($weather->fetchAllCities());
 
         $this->line('Haber verisi cekiliyor...');
-        $counts['news'] = count($news->fetchNews());
+        $counts['news'] = count($news->fetchAll());
 
         $this->line('Trafik verisi cekiliyor...');
         $counts['traffic'] = count($traffic->fetchIncidents());
