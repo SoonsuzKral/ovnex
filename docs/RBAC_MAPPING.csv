@@ -1,0 +1,30 @@
+rol,kaynak,okuma,yazma,silme,yönetim,notlar
+public,harita,EVET,HAYIR,HAYIR,HAYIR,Herkes haritayı görür
+public,aircraft_positions,EVET,HAYIR,HAYIR,HAYIR,Uçakları herkes görür
+public,earthquakes,EVET,HAYIR,HAYIR,HAYIR,Depremleri herkes görür
+public,weather_snapshots,EVET,HAYIR,HAYIR,HAYIR,Hava durumunu herkes görür
+public,news_feed,EVET,HAYIR,HAYIR,HAYIR,Sadece is_verified=true olanlar
+public,traffic_incidents,EVET,HAYIR,HAYIR,HAYIR,Herkese açık
+public,vessel_positions,EVET,HAYIR,HAYIR,HAYIR,Herkese açık
+public,camera_sources,EVET,HAYIR,HAYIR,HAYIR,Sadece is_active=true olanlar
+public,reklamlar,EVET,HAYIR,HAYIR,HAYIR,Reklam görüntüleme
+admin,harita,EVET,EVET,EVET,EVET,Tam erişim
+admin,aircraft_positions,EVET,EVET,EVET,EVET,Veri düzenleme
+admin,earthquakes,EVET,EVET,EVET,EVET,Manuel girdi imkânı
+admin,weather_snapshots,EVET,EVET,EVET,EVET,Manuel düzeltme
+admin,news_feed,EVET,EVET,EVET,EVET,Haber onay/reddi
+admin,traffic_incidents,EVET,EVET,EVET,EVET,Olay yönetimi
+admin,vessel_positions,EVET,EVET,EVET,EVET,Tam erişim
+admin,camera_sources,EVET,EVET,EVET,EVET,Kamera ekleme/kaldırma
+admin,ad_impressions,EVET,EVET,EVET,EVET,Reklam yönetimi
+admin,system_logs,EVET,HAYIR,HAYIR,EVET,Log okuma
+admin,reklamlar,EVET,EVET,EVET,EVET,Reklam kodu yönetimi
+editor,news_feed,EVET,EVET,HAYIR,HAYIR,Haber ekleyebilir düzenleyebilir ama silemez
+editor,harita,EVET,HAYIR,HAYIR,HAYIR,Sadece görüntüleme
+api_service,aircraft_positions,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,earthquakes,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,weather_snapshots,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,news_feed,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,traffic_incidents,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,vessel_positions,HAYIR,EVET,HAYIR,HAYIR,Laravel Job yazma erişimi
+api_service,system_logs,HAYIR,EVET,HAYIR,HAYIR,Log kaydı

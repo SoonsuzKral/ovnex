@@ -1,0 +1,151 @@
+erDiagram
+    AIRCRAFT_POSITIONS {
+        bigserial id PK
+        varchar icao24
+        varchar callsign
+        varchar origin_country
+        decimal latitude
+        decimal longitude
+        decimal altitude_baro
+        decimal altitude_geo
+        decimal velocity
+        decimal heading
+        boolean on_ground
+        varchar departure_airport
+        varchar arrival_airport
+        geometry geom
+        timestamptz recorded_at
+    }
+
+    EARTHQUAKES {
+        bigserial id PK
+        varchar external_id UK
+        varchar source
+        decimal latitude
+        decimal longitude
+        decimal depth_km
+        decimal magnitude
+        varchar location_name
+        varchar province
+        varchar district
+        geometry geom
+        timestamptz occurred_at
+        timestamptz created_at
+    }
+
+    WEATHER_SNAPSHOTS {
+        bigserial id PK
+        varchar city
+        decimal latitude
+        decimal longitude
+        decimal temperature_c
+        decimal feels_like_c
+        smallint humidity_pct
+        decimal wind_speed_ms
+        smallint wind_direction
+        varchar condition_code
+        varchar condition_text
+        decimal visibility_km
+        decimal rainfall_mm
+        timestamptz recorded_at
+    }
+
+    NEWS_FEED {
+        bigserial id PK
+        text external_url UK
+        varchar source_name
+        varchar source_type
+        text title
+        text summary
+        varchar category
+        varchar severity
+        decimal latitude
+        decimal longitude
+        varchar province
+        text image_url
+        boolean is_verified
+        geometry geom
+        timestamptz published_at
+        timestamptz created_at
+    }
+
+    TRAFFIC_INCIDENTS {
+        bigserial id PK
+        varchar external_id UK
+        varchar incident_type
+        smallint severity
+        text description
+        varchar road_name
+        decimal start_lat
+        decimal start_lng
+        decimal end_lat
+        decimal end_lng
+        integer delay_seconds
+        varchar province
+        geometry geom
+        timestamptz started_at
+        timestamptz ended_at
+        timestamptz created_at
+    }
+
+    VESSEL_POSITIONS {
+        bigserial id PK
+        varchar mmsi
+        varchar vessel_name
+        varchar vessel_type
+        varchar flag
+        decimal latitude
+        decimal longitude
+        decimal speed_knots
+        smallint heading
+        varchar destination
+        timestamptz eta
+        varchar status
+        geometry geom
+        timestamptz recorded_at
+    }
+
+    CAMERA_SOURCES {
+        bigserial id PK
+        varchar name
+        text location_description
+        decimal latitude
+        decimal longitude
+        text stream_url
+        text thumbnail_url
+        boolean is_active
+        varchar province
+        varchar district
+        geometry geom
+        timestamptz created_at
+        timestamptz updated_at
+    }
+
+    AD_IMPRESSIONS {
+        bigserial id PK
+        varchar ad_unit
+        varchar ad_type
+        integer impressions
+        integer clicks
+        varchar ip_hash
+        varchar country
+        date recorded_at
+    }
+
+    SYSTEM_LOGS {
+        bigserial id PK
+        varchar service
+        varchar action
+        varchar status
+        integer records_fetched
+        integer records_inserted
+        integer duration_ms
+        text error_message
+        timestamptz created_at
+    }
+
+    NEWS_FEED ||--o{ EARTHQUAKES : "deprem haberi"
+    NEWS_FEED ||--o{ TRAFFIC_INCIDENTS : "trafik haberi"
+    SYSTEM_LOGS ||--o{ AIRCRAFT_POSITIONS : "veri kaynağı logları"
+    SYSTEM_LOGS ||--o{ EARTHQUAKES : "veri kaynağı logları"
+    SYSTEM_LOGS ||--o{ WEATHER_SNAPSHOTS : "veri kaynağı logları"

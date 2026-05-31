@@ -1,0 +1,206 @@
+{
+  "project": "OVNEX",
+  "database": "PostgreSQL 16 + PostGIS",
+  "version": "1.0.0",
+  "tables": {
+    "aircraft_positions": {
+      "description": "Gerçek zamanlı uçak konum verileri",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "icao24": { "type": "VARCHAR(10)", "nullable": false, "index": true, "comment": "ICAO hex adresi" },
+        "callsign": { "type": "VARCHAR(20)", "nullable": true, "comment": "Uçuş çağrı işareti" },
+        "origin_country": { "type": "VARCHAR(50)", "nullable": true },
+        "latitude": { "type": "DECIMAL(10,7)", "nullable": true },
+        "longitude": { "type": "DECIMAL(10,7)", "nullable": true },
+        "altitude_baro": { "type": "DECIMAL(10,2)", "nullable": true, "comment": "Barometre irtifası (metre)" },
+        "altitude_geo": { "type": "DECIMAL(10,2)", "nullable": true, "comment": "Geometrik irtifa (metre)" },
+        "velocity": { "type": "DECIMAL(8,2)", "nullable": true, "comment": "Hız (m/s)" },
+        "heading": { "type": "DECIMAL(5,2)", "nullable": true, "comment": "Yön (derece)" },
+        "vertical_rate": { "type": "DECIMAL(8,2)", "nullable": true, "comment": "Dikey hız (m/s)" },
+        "on_ground": { "type": "BOOLEAN", "default": false },
+        "squawk": { "type": "VARCHAR(10)", "nullable": true },
+        "departure_airport": { "type": "VARCHAR(10)", "nullable": true, "comment": "IATA kodu" },
+        "arrival_airport": { "type": "VARCHAR(10)", "nullable": true, "comment": "IATA kodu" },
+        "aircraft_type": { "type": "VARCHAR(20)", "nullable": true },
+        "geom": { "type": "GEOMETRY(POINT,4326)", "nullable": true, "comment": "PostGIS nokta" },
+        "recorded_at": { "type": "TIMESTAMPTZ", "nullable": false, "index": true }
+      },
+      "indexes": ["icao24", "recorded_at", "geom (GIST)"],
+      "retention": "Son 24 saat tutulur, eski kayıtlar arşive taşınır"
+    },
+
+    "earthquakes": {
+      "description": "Deprem kayıtları (AFAD + Kandilli)",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "external_id": { "type": "VARCHAR(100)", "unique": true, "comment": "AFAD olay ID" },
+        "source": { "type": "VARCHAR(20)", "default": "AFAD", "comment": "AFAD veya KANDILLI" },
+        "latitude": { "type": "DECIMAL(10,7)", "nullable": false },
+        "longitude": { "type": "DECIMAL(10,7)", "nullable": false },
+        "depth_km": { "type": "DECIMAL(8,2)", "nullable": true, "comment": "Derinlik (km)" },
+        "magnitude": { "type": "DECIMAL(4,2)", "nullable": false, "index": true },
+        "magnitude_type": { "type": "VARCHAR(10)", "nullable": true, "comment": "ML, Mw, vb." },
+        "location_name": { "type": "VARCHAR(200)", "nullable": true, "comment": "İl/ilçe adı" },
+        "province": { "type": "VARCHAR(100)", "nullable": true },
+        "district": { "type": "VARCHAR(100)", "nullable": true },
+        "geom": { "type": "GEOMETRY(POINT,4326)", "nullable": true },
+        "occurred_at": { "type": "TIMESTAMPTZ", "nullable": false, "index": true },
+        "created_at": { "type": "TIMESTAMPTZ", "default": "NOW()" }
+      },
+      "indexes": ["magnitude", "occurred_at", "province", "geom (GIST)"]
+    },
+
+    "weather_snapshots": {
+      "description": "Hava durumu anlık verileri",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "city": { "type": "VARCHAR(100)", "nullable": false, "index": true },
+        "latitude": { "type": "DECIMAL(10,7)" },
+        "longitude": { "type": "DECIMAL(10,7)" },
+        "temperature_c": { "type": "DECIMAL(5,2)", "comment": "Celsius" },
+        "feels_like_c": { "type": "DECIMAL(5,2)" },
+        "humidity_pct": { "type": "SMALLINT", "comment": "0-100" },
+        "wind_speed_ms": { "type": "DECIMAL(6,2)", "comment": "m/s" },
+        "wind_direction": { "type": "SMALLINT", "comment": "0-360 derece" },
+        "condition_code": { "type": "VARCHAR(20)", "comment": "clear, rain, storm vb." },
+        "condition_text": { "type": "VARCHAR(100)" },
+        "condition_icon": { "type": "VARCHAR(200)", "comment": "İkon URL" },
+        "visibility_km": { "type": "DECIMAL(6,2)" },
+        "pressure_hpa": { "type": "DECIMAL(7,2)" },
+        "uv_index": { "type": "SMALLINT" },
+        "rainfall_mm": { "type": "DECIMAL(6,2)", "default": 0 },
+        "snow_mm": { "type": "DECIMAL(6,2)", "default": 0 },
+        "recorded_at": { "type": "TIMESTAMPTZ", "nullable": false, "index": true }
+      }
+    },
+
+    "news_feed": {
+      "description": "Haber ve olay akışı (RSS + web scrape)",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "external_url": { "type": "TEXT", "unique": true },
+        "source_name": { "type": "VARCHAR(100)", "nullable": false, "comment": "AA, TRT, Şanlıurfa Olay vb." },
+        "source_type": { "type": "VARCHAR(20)", "comment": "rss, scrape, manual" },
+        "title": { "type": "TEXT", "nullable": false },
+        "summary": { "type": "TEXT", "nullable": true },
+        "category": {
+          "type": "VARCHAR(50)",
+          "enum": ["earthquake", "fire", "traffic", "flood", "conflict", "emergency", "general", "weather"],
+          "default": "general",
+          "index": true
+        },
+        "severity": {
+          "type": "VARCHAR(20)",
+          "enum": ["low", "medium", "high", "critical"],
+          "default": "low"
+        },
+        "latitude": { "type": "DECIMAL(10,7)", "nullable": true },
+        "longitude": { "type": "DECIMAL(10,7)", "nullable": true },
+        "province": { "type": "VARCHAR(100)", "nullable": true, "index": true },
+        "image_url": { "type": "TEXT", "nullable": true },
+        "published_at": { "type": "TIMESTAMPTZ", "nullable": false, "index": true },
+        "created_at": { "type": "TIMESTAMPTZ", "default": "NOW()" },
+        "is_verified": { "type": "BOOLEAN", "default": false },
+        "geom": { "type": "GEOMETRY(POINT,4326)", "nullable": true }
+      },
+      "indexes": ["category", "province", "published_at", "severity", "geom (GIST)"]
+    },
+
+    "traffic_incidents": {
+      "description": "Trafik olayları ve yoğunluk verileri",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "external_id": { "type": "VARCHAR(100)", "unique": true, "nullable": true },
+        "incident_type": {
+          "type": "VARCHAR(50)",
+          "enum": ["accident", "jam", "roadwork", "closure", "hazard", "alert"],
+          "nullable": false,
+          "index": true
+        },
+        "severity": { "type": "SMALLINT", "comment": "1=Hafif, 2=Orta, 3=Ağır, 4=Çok Ağır" },
+        "description": { "type": "TEXT", "nullable": true },
+        "road_name": { "type": "VARCHAR(200)", "nullable": true },
+        "start_lat": { "type": "DECIMAL(10,7)" },
+        "start_lng": { "type": "DECIMAL(10,7)" },
+        "end_lat": { "type": "DECIMAL(10,7)", "nullable": true },
+        "end_lng": { "type": "DECIMAL(10,7)", "nullable": true },
+        "delay_seconds": { "type": "INTEGER", "default": 0 },
+        "province": { "type": "VARCHAR(100)", "nullable": true, "index": true },
+        "geom": { "type": "GEOMETRY(LINESTRING,4326)", "nullable": true },
+        "started_at": { "type": "TIMESTAMPTZ" },
+        "ended_at": { "type": "TIMESTAMPTZ", "nullable": true },
+        "created_at": { "type": "TIMESTAMPTZ", "default": "NOW()" }
+      }
+    },
+
+    "vessel_positions": {
+      "description": "Gemi/deniz araçları konum verileri",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "mmsi": { "type": "VARCHAR(15)", "index": true, "comment": "Denizcilik kimlik no" },
+        "vessel_name": { "type": "VARCHAR(100)", "nullable": true },
+        "vessel_type": { "type": "VARCHAR(50)", "nullable": true },
+        "flag": { "type": "VARCHAR(5)", "nullable": true, "comment": "Ülke kodu" },
+        "latitude": { "type": "DECIMAL(10,7)" },
+        "longitude": { "type": "DECIMAL(10,7)" },
+        "speed_knots": { "type": "DECIMAL(6,2)", "nullable": true },
+        "heading": { "type": "SMALLINT", "nullable": true },
+        "destination": { "type": "VARCHAR(200)", "nullable": true },
+        "eta": { "type": "TIMESTAMPTZ", "nullable": true },
+        "status": { "type": "VARCHAR(50)", "nullable": true },
+        "geom": { "type": "GEOMETRY(POINT,4326)", "nullable": true },
+        "recorded_at": { "type": "TIMESTAMPTZ", "nullable": false, "index": true }
+      }
+    },
+
+    "camera_sources": {
+      "description": "Şehir kameraları (MOBESE) kayıtları",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "name": { "type": "VARCHAR(200)", "nullable": false },
+        "location_description": { "type": "TEXT", "nullable": true },
+        "latitude": { "type": "DECIMAL(10,7)", "nullable": false },
+        "longitude": { "type": "DECIMAL(10,7)", "nullable": false },
+        "stream_url": { "type": "TEXT", "nullable": true },
+        "thumbnail_url": { "type": "TEXT", "nullable": true },
+        "is_active": { "type": "BOOLEAN", "default": true },
+        "province": { "type": "VARCHAR(100)", "default": "Şanlıurfa" },
+        "district": { "type": "VARCHAR(100)", "nullable": true },
+        "geom": { "type": "GEOMETRY(POINT,4326)", "nullable": true },
+        "created_at": { "type": "TIMESTAMPTZ", "default": "NOW()" },
+        "updated_at": { "type": "TIMESTAMPTZ" }
+      }
+    },
+
+    "ad_impressions": {
+      "description": "Reklam görüntüleme ve tıklama sayaçları",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "ad_unit": { "type": "VARCHAR(50)", "nullable": false, "comment": "header_banner, sidebar_rect, vb." },
+        "ad_type": { "type": "VARCHAR(20)", "comment": "banner, video, interstitial, native" },
+        "impressions": { "type": "INTEGER", "default": 0 },
+        "clicks": { "type": "INTEGER", "default": 0 },
+        "ip_hash": { "type": "VARCHAR(64)", "nullable": true, "comment": "SHA256 hash (KVKK)" },
+        "user_agent_hash": { "type": "VARCHAR(64)", "nullable": true },
+        "country": { "type": "VARCHAR(5)", "nullable": true },
+        "recorded_at": { "type": "DATE", "nullable": false, "index": true }
+      }
+    },
+
+    "system_logs": {
+      "description": "API çağrı ve sistem logları",
+      "columns": {
+        "id": { "type": "BIGSERIAL", "pk": true },
+        "service": { "type": "VARCHAR(50)", "nullable": false, "comment": "opensky, afad, tomtom vb." },
+        "action": { "type": "VARCHAR(50)", "comment": "fetch, parse, insert, error" },
+        "status": { "type": "VARCHAR(20)", "comment": "success, failed, partial" },
+        "records_fetched": { "type": "INTEGER", "default": 0 },
+        "records_inserted": { "type": "INTEGER", "default": 0 },
+        "duration_ms": { "type": "INTEGER", "nullable": true },
+        "error_message": { "type": "TEXT", "nullable": true },
+        "created_at": { "type": "TIMESTAMPTZ", "default": "NOW()", "index": true }
+      },
+      "retention": "90 gün"
+    }
+  }
+}
