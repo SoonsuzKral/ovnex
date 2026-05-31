@@ -22,22 +22,25 @@ OVNEX, açık API'lar ve OSINT kaynaklarından veri toplayarak bunları Palantir
 
 | # | Özellik | Durum |
 |---|---------|-------|
-| 1 | Gerçek zamanlı uçak takibi | Faz 1 |
-| 2 | Trafik yoğunluğu haritası | Faz 1 |
-| 3 | Deprem & afet bildirimleri | Faz 1 |
-| 4 | Canlı haber/olay akışı | Faz 1 |
-| 5 | Hava durumu overlay | Faz 1 |
-| 6 | Gemi & deniz takibi | Faz 2 |
-| 7 | Şehir kameraları | Faz 2 |
-| 8 | OSINT entity grafiği | Faz 2 |
+| 1 | Gerçek zamanlı uçak takibi | ✅ v1.1.0 |
+| 2 | Trafik yoğunluğu haritası | ✅ v1.1.0 |
+| 3 | Deprem & afet bildirimleri | ✅ v1.1.0 |
+| 4 | Canlı haber/olay akışı | ✅ v1.1.0 |
+| 5 | Hava durumu overlay | ✅ v1.1.0 |
+| 6 | Gemi & deniz takibi | ✅ v1.1.0 |
+| 7 | Kullanıcı girişi (Auth) | ✅ v1.1.0 |
+| 8 | Admin panel | ✅ v1.1.0 |
+| 9 | WebSocket canlı veri | ✅ v1.1.0 |
+| 10 | Şehir kameraları | ⏳ Faz 2 |
+| 11 | OSINT entity grafiği | ⏳ Faz 2 |
 
 ---
 
 ## Teknoloji
 
-- **Backend:** Laravel 11 / PHP 8.3 / PostgreSQL / Redis
-- **Frontend:** Leaflet.js / Alpine.js / Livewire / Tailwind CSS
-- **Gerçek Zamanlı:** Laravel Reverb (WebSocket)
+- **Backend:** Laravel 12 / PHP 8.2 / MySQL (SQLite test)
+- **Frontend:** Leaflet.js / Alpine.js / Tailwind CSS
+- **Gerçek Zamanlı:** Laravel Reverb (Pusher protokolü)
 - **Dağıtım:** Ubuntu + Nginx + CloudFlare
 
 ---

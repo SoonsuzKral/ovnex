@@ -1,0 +1,66 @@
+name: Veri Toplama
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: ovnex
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP kurulumu
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+          extensions: pdo, pdo_mysql, mbstring, bcmath
+          coverage: none
+
+      - name: Composer bagimliliklari
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: .env olustur
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Veritabani baglantisi
+        run: |
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+
+      - name: API anahtarlari
+        env:
+          OS_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OS_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}
+          OWM_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          TOMTOM_KEY: ${{ secrets.TOMTOM_API_KEY }}
+        run: |
+          sed -i "s|OPENSKY_CLIENT_ID=.*|OPENSKY_CLIENT_ID=$OS_CLIENT_ID|" .env
+          sed -i "s|OPENSKY_CLIENT_SECRET=.*|OPENSKY_CLIENT_SECRET=$OS_CLIENT_SECRET|" .env
+          sed -i "s|OPENWEATHER_API_KEY=.*|OPENWEATHER_API_KEY=$OWM_KEY|" .env
+          sed -i "s|TOMTOM_API_KEY=.*|TOMTOM_API_KEY=$TOMTOM_KEY|" .env
+
+      - name: Migration
+        run: php artisan migrate --force
+
+      - name: Veri topla
+        run: php artisan ovnex:collect-sync
+
+      - name: Kuyruktaki isleri isle
+        run: php artisan queue:work --once --max-jobs=50

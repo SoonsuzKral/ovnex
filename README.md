@@ -1,36 +1,37 @@
 # OVNEX — Osman & Vildan Intelligence Nexus
 
-> Türkiye'nin Gerçek Zamanlı OSINT Harita Portalı
+> Türkiye'nin Gerçek Zamanlı OSINT Harita Portalı — Şanlıurfa Merkezli
 
 ## Özellikler
 
-- **✈️ Canlı uçak takibi** — OpenSky Network API ile Türkiye semalarındaki uçaklar
-- **🌍 Trafik yoğunluğu** — TomTom Traffic API ile anlık trafik olayları
-- **🔴 Deprem & afet izleme** — AFAD Open API ile canlı deprem verileri
-- **🌤️ Hava durumu katmanı** — OpenWeatherMap ile 5 şehir anlık hava durumu
-- **📰 Canlı haber & olay akışı** — AA, TRT, Hürriyet RSS toplayıcı
-- **🚢 Gemi takibi** — MarineTraffic API ile Türkiye kıyıları gemi konumları
-- **📡 Gerçek zamanlı WebSocket** — Laravel Reverb ile anlık güncellemeler
+- ✈️ Canlı uçak takibi — OpenSky API ile Türkiye semaları
+- 🌍 Trafik yoğunluğu — TomTom Traffic API ile anlık olaylar
+- 🔴 Deprem & afet izleme — AFAD API ile canlı deprem verileri
+- 🌤️ Hava durumu katmanı — OpenWeatherMap ile çok şehir
+- 📰 Canlı haber & olay akışı — AA, TRT, Hürriyet RSS
+- 🚢 Gemi takibi — MarineTraffic API ile Türkiye kıyıları
+- 📡 Gerçek zamanlı WebSocket — Laravel Reverb
+- 🔐 Kullanıcı girişi — Laravel Breeze (Blade) ile auth
 
-## Kurulum
+## Hızlı Kurulum
 
 ```bash
-git clone https://github.com/ovnex/ovnex.git
+git clone https://github.com/SoonsuzKral/ovnex.git
 cd ovnex
 composer install
 cp .env.example .env
 php artisan key:generate
-php artisan migrate
-php artisan db:seed
+php artisan migrate --seed
 php artisan serve
+# Giriş: admin@ovnex.io / admin123
 ```
 
 ## Gereksinimler
 
 - PHP 8.2+
-- MySQL 8.0
+- MySQL 8.0 (veya SQLite test için)
 - Composer 2.x
-- Node.js & NPM (opsiyonel, Vite için)
+- Node.js & NPM (opsiyonel, Vite frontent için)
 
 ## API Anahtarları
 
@@ -45,13 +46,22 @@ php artisan serve
 
 | Bileşen | Teknoloji |
 |---------|-----------|
-| Backend | Laravel 11 / PHP 8.2 |
-| Veritabanı | MySQL 8.0 |
-| Gerçek Zamanlı | Laravel Reverb (WebSocket) |
+| Backend | Laravel 12 / PHP 8.2 |
+| Veritabanı | MySQL 8.0 (SQLite test) |
+| Auth | Laravel Breeze (Blade) |
+| Gerçek Zamanlı | Laravel Reverb + Pusher |
 | Harita | Leaflet.js + CartoDB Dark Matter |
 | Frontend | Blade + Alpine.js + Tailwind CSS |
 | Queue | Database driver |
+| Test | PHPUnit (44 test, RefreshDatabase) |
+
+## Test
+
+```bash
+php artisan test
+# 44 tests, 93 assertions — tamamı yeşil
+```
 
 ## Lisans
 
-MIT — Osman & Vildan Projesi © 2025
+MIT — Osman & Vildan Projesi © 2025-2026

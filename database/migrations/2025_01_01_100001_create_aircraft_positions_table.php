@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('departure_airport', 10)->nullable();
             $table->string('arrival_airport', 10)->nullable();
             $table->string('aircraft_type', 20)->nullable();
-            $table->timestamp('recorded_at')->nullable(false)->index();
+            $table->timestamp('recorded_at')->useCurrent()->index();
             $table->timestamps();
 
             $table->index(['latitude', 'longitude']);

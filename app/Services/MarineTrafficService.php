@@ -30,7 +30,10 @@ class MarineTrafficService
 
         try {
             $apiKey = env('MARINE_TRAFFIC_API_KEY');
-            if (!$apiKey) throw new \Exception('MARINE_TRAFFIC_API_KEY tanimli degil');
+            if (!$apiKey) {
+                Log::info('MarineTraffic API key tanimli degil, atlaniyor');
+                return [];
+            }
 
             // Türkiye kıyıları bounding box
             $response = $this->httpClient->get('/api/exportvessel/v2/', [

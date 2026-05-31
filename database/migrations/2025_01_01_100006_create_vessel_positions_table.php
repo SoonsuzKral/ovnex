@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('destination', 200)->nullable();
             $table->timestamp('eta')->nullable();
             $table->string('status', 50)->nullable();
-            $table->timestamp('recorded_at')->nullable(false)->index();
+            $table->timestamp('recorded_at')->useCurrent()->index();
             $table->timestamps();
 
             $table->index(['latitude', 'longitude']);

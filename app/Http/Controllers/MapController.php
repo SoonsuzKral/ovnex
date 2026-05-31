@@ -11,6 +11,7 @@ use App\Models\WeatherSnapshot;
 use App\Models\NewsFeed;
 use App\Models\TrafficIncident;
 use App\Models\VesselPosition;
+use App\Models\SystemLog;
 
 class MapController extends Controller
 {
@@ -62,5 +63,14 @@ class MapController extends Controller
         ];
 
         return response()->json($data);
+    }
+
+    public function adminStats()
+    {
+        $sonLoglar = SystemLog::latest('created_at')
+            ->take(50)
+            ->get();
+
+        return view('pages.admin-stats', compact('sonLoglar'));
     }
 }

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->smallInteger('uv_index');
             $table->decimal('rainfall_mm', 6, 2)->default(0);
             $table->decimal('snow_mm', 6, 2)->default(0);
-            $table->timestamp('recorded_at')->nullable(false)->index();
+            $table->timestamp('recorded_at')->useCurrent()->index();
             $table->timestamps();
         });
     }

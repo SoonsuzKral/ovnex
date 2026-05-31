@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 class OpenSkyService
 {
     protected Client $httpClient;
+    protected ?string $accessToken = null;
+    protected int $tokenExpiresAt = 0;
 
     public function __construct()
     {
@@ -21,6 +23,39 @@ class OpenSkyService
             'base_uri' => 'https://opensky-network.org',
             'timeout' => 15.0,
         ]);
+    }
+
+    protected function getAccessToken(): string
+    {
+        if ($this->accessToken && time() < $this->tokenExpiresAt) {
+            return $this->accessToken;
+        }
+
+        $clientId = env('OPENSKY_CLIENT_ID');
+        $clientSecret = env('OPENSKY_CLIENT_SECRET');
+
+        if (!$clientId || !$clientSecret) {
+            throw new \Exception('OPENSKY_CLIENT_ID veya OPENSKY_CLIENT_SECRET tanimli degil');
+        }
+
+        $response = $this->httpClient->post('/api/token', [
+            'form_params' => [
+                'grant_type' => 'client_credentials',
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+            ],
+        ]);
+
+        $data = json_decode($response->getBody(), true);
+        $this->accessToken = $data['access_token'] ?? null;
+        $expiresIn = $data['expires_in'] ?? 3600;
+        $this->tokenExpiresAt = time() + $expiresIn - 60;
+
+        if (!$this->accessToken) {
+            throw new \Exception('OpenSky token alinamadi');
+        }
+
+        return $this->accessToken;
     }
 
     public function fetchAircraft(): array
@@ -31,8 +66,7 @@ class OpenSkyService
         $inserted = 0;
 
         try {
-            $username = env('OPENSKY_USERNAME');
-            $password = env('OPENSKY_PASSWORD');
+            $token = $this->getAccessToken();
 
             $response = $this->httpClient->get('/api/states/all', [
                 RequestOptions::QUERY => [
@@ -41,8 +75,27 @@ class OpenSkyService
                     'lamax' => 42.1,
                     'lomax' => 44.8,
                 ],
-                RequestOptions::AUTH => [$username, $password],
+                RequestOptions::HEADERS => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
             ]);
+
+            if ($response->getStatusCode() === 401) {
+                $this->accessToken = null;
+                $this->tokenExpiresAt = 0;
+                $token = $this->getAccessToken();
+                $response = $this->httpClient->get('/api/states/all', [
+                    RequestOptions::QUERY => [
+                        'lamin' => 35.5,
+                        'lomin' => 25.0,
+                        'lamax' => 42.1,
+                        'lomax' => 44.8,
+                    ],
+                    RequestOptions::HEADERS => [
+                        'Authorization' => 'Bearer ' . $token,
+                    ],
+                ]);
+            }
 
             $data = json_decode($response->getBody(), true);
             $states = $data['states'] ?? [];

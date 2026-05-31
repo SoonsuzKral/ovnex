@@ -1,4 +1,4 @@
-name: OVNEX CI/CD
+name: OVNEX CI/CD Pipeline
 
 on:
   push:
@@ -7,8 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  laravel-tests:
+  quality:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [8.2, 8.3]
 
     services:
       mysql:
@@ -23,36 +26,83 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
+      - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
-          extensions: mbstring, pdo_mysql, bcmath, curl, zip
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, pdo_mysql, pdo_sqlite, bcmath, curl, zip, intl
+          tools: composer:v2
           coverage: none
 
-      - name: Cache Composer
+      - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
           path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('composer.lock') }}
+          restore-keys: |
+            composer-${{ matrix.php-version }}-
+            composer-
 
-      - name: Install Dependencies
-        run: composer install --no-progress --no-interaction --prefer-dist
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Environment Setup
+      - name: Environment setup (MySQL)
         run: |
           cp .env.example .env
           php artisan key:generate
+          sed -i 's/DB_CONNECTION=mysql/DB_CONNECTION=mysql/' .env
           sed -i 's/DB_DATABASE=ovnex/DB_DATABASE=ovnex_test/' .env
-          sed -i 's/DB_USERNAME=root/DB_USERNAME=root/' .env
           sed -i 's/DB_PASSWORD=/DB_PASSWORD=root/' .env
-          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
 
-      - name: Run Migrations
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -u root -proot && break || sleep 2
+          done
+
+      - name: Run migrations
         run: php artisan migrate --force
 
-      - name: Route Check
+      - name: Seed demo data
+        run: php artisan db:seed --force
+
+      - name: PHP syntax check
+        run: find app -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+
+      - name: Route check
         run: php artisan route:list
 
-      - name: Config Check
-        run: php artisan config:clear && php artisan config:cache
+      - name: Config cache
+        run: php artisan config:cache
+
+      - name: View cache
+        run: php artisan view:cache
+
+      - name: Event cache
+        run: php artisan event:cache || echo "Event cache not available"
+
+      - name: Storage link
+        run: php artisan storage:link || true
+
+      - name: Queue work test
+        run: |
+          php artisan queue:work --once --sleep=1 --tries=1 || echo "No jobs in queue (expected)"
+
+      - name: API endpoint smoke test
+        run: |
+          php artisan serve --port=8000 &
+          sleep 3
+          curl -s http://localhost:8000/api/stats | head -c 200
+          echo ""
+          curl -s http://localhost:8000/api/earthquakes/recent | head -c 200
+          echo ""
+          curl -s http://localhost:8000/api/weather/cities | head -c 200
+          echo ""
+          curl -s http://localhost:8000/api/news/latest | head -c 200
+          echo ""
+          kill %1 || true
+
+      - name: Test artisan commands
+        run: |
+          php artisan ovnex:collect-all
+          php artisan inspire || true

@@ -132,9 +132,7 @@ RSS Feeds ────────────────► NewsCollectorJob
 
 ---
 
-## YAPILANLAR / EKSİKLER — Güncel Durum (v1.0.0)
-
-> Bu bölüm her işlem sonrası güncellenir. Yeni pencere açıldığında buraya bak.
+## YAPILANLAR / EKSİKLER — Güncel Durum (v1.2.0)
 
 ### ✅ TAMAMLANANLAR (Kod)
 
@@ -143,7 +141,7 @@ RSS Feeds ────────────────► NewsCollectorJob
 | 1 | Laravel 12 proje kurulumu (Reverb + Predis) | ✅ |
 | 2 | `.env` OVNEX yapılandırması | ✅ |
 | 3 | 9 adet MySQL migration dosyası | ✅ |
-| 4 | 9 adet Eloquent Model ($fillable dolu) | ✅ |
+| 4 | 9 adet Eloquent Model ($fillable + HasFactory) | ✅ |
 | 5 | 7 adet Service (OpenSky, AFAD, OpenWeather, RSS, TomTom, MarineTraffic, Geocoding) | ✅ |
 | 6 | 6 adet Queue Job (failed metotlu) | ✅ |
 | 7 | 3 adet WebSocket Event (ShouldBroadcast) | ✅ |
@@ -153,40 +151,58 @@ RSS Feeds ────────────────► NewsCollectorJob
 | 11 | Palantir dark tema Blade layout (3 kolon) | ✅ |
 | 12 | Leaflet.js harita + CartoDB Dark Matter | ✅ |
 | 13 | Katman kontrolleri (uçak, deprem, trafik, hava, gemi) | ✅ |
-| 14 | WebSocket.js (Laravel Echo + Pusher) | ✅ |
+| 14 | WebSocket.js (Laravel Echo + Reverb) | ✅ |
 | 15 | 5 adet reklam birimi placeholder | ✅ |
 | 16 | Scheduler kayıtları (console.php) | ✅ |
 | 17 | `php artisan ovnex:collect-all` komutu | ✅ |
 | 18 | README.md (OVNEX özel) | ✅ |
 | 19 | .gitignore (Laravel default) | ✅ |
 | 20 | .env.example (API key'ler placeholder) | ✅ |
-| 21 | CHANGELOG.md (v1.0.0) | ✅ |
-| 22 | VERSION dosyası (1.0.0) | ✅ |
-| 23 | GitHub Actions CI/CD workflow | ✅ |
-| 24 | Reverb + Broadcasting config publish | ✅ |
-| 25 | Git init + GitHub remote (ovnex/ovnex) | ✅ |
+| 21 | CHANGELOG.md | ✅ |
+| 22 | VERSION dosyası | ✅ |
+| 23 | Git init + GitHub remote (SoonsuzKral/ovnex) | ✅ |
+| 24 | GitHub'a push (v1.0.0 + v1.1.0 tag ile) | ✅ |
+| 25 | GitHub Actions CI/CD workflow | ✅ |
+| 26 | Reverb + Broadcasting config yayınlandı | ✅ |
+| 27 | SQLite ile migrate + seed + test (44/44) | ✅ |
+| 28 | Laravel Breeze auth (login, register, profil) | ✅ |
+| 29 | API rate limiting (60 istek/dk) | ✅ |
+| 30 | Model Factory'ler (3 adet) | ✅ |
+| 31 | Unit Test'ler (3 adet) | ✅ |
+| 32 | Admin kullanıcı seeder (admin@ovnex.io) | ✅ |
+| 33 | Admin stats sayfası auth korumalı | ✅ |
+| 34 | Reverb meta tag'leri layout'a eklendi | ✅ |
+| 35 | MySQL 8.4 kurulumu + tüm migration'lar çalıştı | ✅ |
+| 36 | OpenSky OAuth2 client credentials desteği | ✅ |
+| 37 | OpenWeather API key eklendi | ✅ |
+| 38 | TomTom API key eklendi | ✅ |
+| 39 | OpenSky token expiry handling (otomatik refresh) | ✅ |
+| 40 | MarineTraffic API key yokken graceful skip | ✅ |
+| 41 | AISHub alternatif gemi takip servisi | ✅ |
+| 42 | `php artisan ovnex:collect-sync` komutu (queue'suz) | ✅ |
+| 43 | GitHub Actions scheduled data collection workflow | ✅ |
+| 44 | docs/FREE_HOSTING.md (ücretsiz hosting rehberi) | ✅ |
+| 45 | v1.2.0 tag + GitHub push | ✅ |
 
 ### ❌ EKSİKLER / YAPILACAKLAR
 
 | # | Madde | Öncelik | Not |
 |---|-------|---------|-----|
-| 1 | MySQL servisi kurulumu | Yüksek | Yerelde MySQL çalışmıyor, migrate çalıştırılamadı |
-| 2 | API anahtarlarının temini | Yüksek | OPENSKY, OPENWEATHER, TOMTOM, MARINE_TRAFFIC boş |
-| 3 | `php artisan migrate` çalıştırma | Yüksek | MySQL hazır olunca |
-| 4 | Laravel Horizon kurulumu | Orta | Windows'ta pcntl yok. Production'da kurulacak |
-| 5 | Redis servisi kurulumu | Orta | Yerelde Redis yok. Database driver kullanılıyor |
-| 6 | Vite derleme | Düşük | Şu an CDN kullanılıyor. Production'da Vite'e geçilecek |
-| 7 | Supervisor config | Orta | Production deployment aşamasında |
-| 8 | SSL Sertifikası | Orta | Domain alınınca Let's Encrypt |
-| 9 | CloudFlare DNS | Düşük | Domain alınınca |
-| 10 | Google AdSense onayı | Yüksek | Site trafiği başlayınca |
-| 11 | Admin panel (Telescope/Sentry) | Düşük | Production monitoring |
+| 1 | AdSense onayı | Yüksek | Site trafiği başlayınca |
+| 2 | RBAC middleware implementasyonu | Orta | RBAC_MAPPING.csv hazır, kod yok |
+| 3 | Laravel Horizon kurulumu | Orta | Windows'ta pcntl yok. Production'da kurulacak |
+| 4 | Vite derleme (üretim) | Düşük | Şu an CDN kullanılıyor |
+| 5 | Supervisor config | Orta | Production deployment aşamasında |
+| 6 | Admin panel (Telescope/Sentry) | Düşük | Production monitoring |
+| 7 | spatie/laravel-tags paketi | Düşük | ACTION_PLAN'de belirtilmişti |
 
 ### 🔄 DEVAM EDEN
 
 | # | İşlem | Açıklama |
 |---|-------|----------|
-| — | Bekleyen işlem yok | — |
+| 1 | Free hosting deploy | docs/FREE_HOSTING.md'ye göre Railway/Render + TiDB |
+| 2 | Domain + SSL + CloudFlare | Hazır, hosting deploy sonrası bağlanacak |
+| 3 | Faz 2 modülleri | OSINT paneli, PWA, video reklam |
 
 ---
 

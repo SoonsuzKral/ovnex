@@ -6,9 +6,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VesselPosition extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'mmsi',
         'vessel_name',

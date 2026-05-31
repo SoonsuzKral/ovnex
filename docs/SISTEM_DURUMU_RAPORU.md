@@ -1,6 +1,6 @@
 # OVNEX — SİSTEM_DURUMU_RAPORU.md
 
-## Proje Durum Raporu | Versiyon 1.0.0
+## Proje Durum Raporu | Versiyon 1.1.0
 
 ---
 
@@ -14,8 +14,8 @@
 | Roadmap | ✅ Tamamlandı | 3 faz planlandı |
 | Action Plan | ✅ Tamamlandı | Adım adım kurulum hazır |
 | ERD | ✅ Tamamlandı | ERD.mermaid hazır |
-| RBAC | ✅ Tamamlandı | RBAC_MAPPING.csv hazır |
-| **Kod Geliştirme** | ⏳ Bekliyor | Google Jules'e verilecek |
+| RBAC | ✅ Tamamlandı | RBAC_MAPPING.csv hazır (middleware bekliyor) |
+| **Kod Geliştirme** | ✅ Tamamlandı (v1.1.0) | 9 migration, 9 model, 7 servis, 6 job, 3 event, 7 controller, 13 API route |
 
 ---
 
@@ -25,20 +25,21 @@
 
 | Modül | Durum | API | Öncelik |
 |-------|-------|-----|---------|
-| Harita Altyapısı | ⏳ Planlandı | Leaflet + OSM | Kritik |
-| Uçak Takibi | ⏳ Planlandı | OpenSky Network | Yüksek |
-| Deprem İzleme | ⏳ Planlandı | AFAD + Kandilli | Yüksek |
-| Hava Durumu | ⏳ Planlandı | OpenWeatherMap | Orta |
-| Haber Akışı | ⏳ Planlandı | RSS Toplayıcı | Orta |
-| Reklam Sistemi | ⏳ Planlandı | Google AdSense | Yüksek |
-| WebSocket | ⏳ Planlandı | Laravel Reverb | Kritik |
+| Harita Altyapısı | ✅ Tamam | Leaflet + CartoDB Dark | Kritik |
+| Uçak Takibi | ✅ Tamam | OpenSky Network | Yüksek |
+| Deprem İzleme | ✅ Tamam | AFAD + Kandilli | Yüksek |
+| Hava Durumu | ✅ Tamam | OpenWeatherMap | Orta |
+| Haber Akışı | ✅ Tamam | RSS Toplayıcı | Orta |
+| Reklam Sistemi | ✅ Tamam (placeholder) | Google AdSense bekliyor | Yüksek |
+| WebSocket | ✅ Tamam | Laravel Reverb | Kritik |
+| Kullanıcı Girişi | ✅ Tamam | Laravel Breeze | Yüksek |
 
 ### Faz 2 Modülleri
 
 | Modül | Durum | API | Öncelik |
 |-------|-------|-----|---------|
-| Trafik Yoğunluğu | ⏳ Planlandı | TomTom Traffic | Yüksek |
-| Gemi Takibi | ⏳ Planlandı | MarineTraffic | Orta |
+| Trafik Yoğunluğu | ✅ Tamam (kod) | TomTom Traffic (key gerekli) | Yüksek |
+| Gemi Takibi | ✅ Tamam (kod) | MarineTraffic (key gerekli) | Orta |
 | OSINT Paneli | ⏳ Planlandı | İç sistem | Orta |
 | Video Reklam | ⏳ Planlandı | AdSense/DFP | Yüksek |
 | PWA | ⏳ Planlandı | - | Orta |
@@ -57,12 +58,12 @@
 
 | API | Kayıt | API Key | Test | Durum |
 |-----|-------|---------|------|-------|
-| OpenSky Network | ❌ | ❌ | ❌ | Kurulum gerekli |
-| OpenWeatherMap | ❌ | ❌ | ❌ | Kurulum gerekli |
-| AFAD Deprem | ❌ | N/A | ❌ | Kurulum gerekli |
-| TomTom Traffic | ❌ | ❌ | ❌ | Faz 2 |
-| MarineTraffic | ❌ | ❌ | ❌ | Faz 2 |
-| Google AdSense | ❌ | ❌ | ❌ | Site hazır olduktan sonra |
+| OpenSky Network | ❌ | ❌ | ❌ | Kod hazır, key gerekli |
+| OpenWeatherMap | ❌ | ❌ | ❌ | Kod hazır, key gerekli |
+| AFAD Deprem | ❌ | N/A | ❌ | Kod hazır, public API |
+| TomTom Traffic | ❌ | ❌ | ❌ | Kod hazır, key gerekli |
+| MarineTraffic | ❌ | ❌ | ❌ | Kod hazır, key gerekli |
+| Google AdSense | ❌ | ❌ | ❌ | Site yayında olmalı |
 
 ---
 
@@ -70,24 +71,24 @@
 
 | Bileşen | Durum | Not |
 |---------|-------|-----|
-| Domain | ❌ | Satın alınmadı (önerim: ovnex.com.tr) |
+| Domain | ❌ | Satın alınmadı (ovnex.io önerilir) |
 | VPS Sunucu | ❌ | Henüz kiralanmadı |
 | SSL Sertifikası | ❌ | Domain'e bağlı |
 | CloudFlare | ❌ | Domain'e bağlı |
-| PostgreSQL | ❌ | Sunucu kurulduktan sonra |
-| Redis | ❌ | Sunucu kurulduktan sonra |
-| Laravel Projesi | ❌ | Başlamadı |
+| MySQL | ❌ | SQLite ile test edildi |
+| Redis | ❌ | Database queue driver fallback |
+| Laravel Projesi | ✅ v1.1.0 | GitHub'da (SoonsuzKral/ovnex) |
 
 ---
 
 ## SONRAKİ ADIMLAR (Öncelik Sırasına Göre)
 
-1. **[ ] Bu docs klasörünü Google Jules'e ver** — Proje migration/controller/service kodlarını üretsin
-2. **[ ] Domain satın al** — ovnex.com.tr (nic.tr veya isimtescil.net)
-3. **[ ] VPS kirala** — Hetzner CX21 (~4$/ay) veya Contabo
-4. **[ ] OpenSky Network kaydı** — opensky-network.org
-5. **[ ] OpenWeatherMap kaydı** — openweathermap.org/api
-6. **[ ] Laravel kurulumu başlat**
+1. **[ ] API anahtarlarını temin et** — OpenSky, OpenWeather, AFAD test et
+2. **[ ] MySQL kur** — `php artisan migrate` çalıştır
+3. **[ ] VPS kirala** — Hetzner veya Contabo
+4. **[ ] Production deploy** — Nginx + Supervisor + Horizon + Reverb
+5. **[ ] Domain + SSL + CloudFlare**
+6. **[ ] Google AdSense başvurusu****
 
 ---
 

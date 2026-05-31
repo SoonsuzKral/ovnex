@@ -6,6 +6,9 @@
     <title>@yield('title', 'OVNEX — Osman & Vildan Intelligence Nexus')</title>
     <meta name="description" content="Türkiye'nin Gerçek Zamanlı OSINT Harita Portalı">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="reverb-key" content="{{ config('broadcasting.connections.reverb.key') }}">
+    <meta name="reverb-host" content="{{ config('broadcasting.connections.reverb.options.host') }}">
+    <meta name="reverb-port" content="{{ config('broadcasting.connections.reverb.options.port') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,12 +53,28 @@
                 <span class="text-lg font-bold ovnex-cyan tracking-wider">OVNEX</span>
                 <span class="text-xs text-gray-500 hidden sm:inline">OSMAN & VILDAN INTELLIGENCE NEXUS</span>
             </div>
+            @auth
             <div class="flex items-center gap-4 text-xs">
                 @include('components.map-controls')
             </div>
             <div class="flex items-center gap-2 text-xs text-gray-400" x-data="{ now: new Date().toLocaleString('tr-TR') }" x-init="setInterval(() => now = new Date().toLocaleString('tr-TR'), 1000)">
                 <span x-text="now"></span>
+                <a href="{{ route('profile.edit') }}" class="ovnex-cyan hover:underline">{{ auth()->user()->name }}</a>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-gray-500 hover:text-red-400">Çıkış</button>
+                </form>
             </div>
+            @else
+            <div class="flex items-center gap-4 text-xs">
+                @include('components.map-controls')
+            </div>
+            <div class="flex items-center gap-2 text-xs text-gray-400" x-data="{ now: new Date().toLocaleString('tr-TR') }" x-init="setInterval(() => now = new Date().toLocaleString('tr-TR'), 1000)">
+                <span x-text="now"></span>
+                <a href="{{ route('login') }}" class="ovnex-cyan hover:underline">Giriş</a>
+                <a href="{{ route('register') }}" class="text-gray-500 hover:text-gray-300">Kayıt</a>
+            </div>
+            @endauth
         </header>
 
         {{-- AD LEADERBOARD --}}
